@@ -1,5 +1,6 @@
 package com.ashish.manager;
 
+import com.ashish.exceptions.NoEntryFoundException;
 import com.ashish.models.Frequency;
 import com.ashish.models.QueryParams;
 import com.ashish.models.Result;
@@ -19,8 +20,10 @@ import java.time.LocalDateTime;
 
 public class LogManager {
 
-    public Result processRequest(File file, LocalDateTime dateTime) throws FileNotFoundException, IOException {
-
+    public Result processRequest(File file, LocalDateTime dateTime) throws IOException, NoEntryFoundException {
+        // Define type of data we want to store.
+        // choosing String for the assignment, since we deal
+        // with string type cookies.
         Storage<String> storage = new DailyStorage();
         LogReader reader = new CsvLogReader(file);
         LogProcessor logProcessor = new BasicLogProcessor(storage);
@@ -28,7 +31,7 @@ public class LogManager {
 
         // Process log file
         logProcessor.processLogFile(reader);
-
+        // Query for result.
         Result result = queryProcessor.query(new QueryParams(dateTime, Frequency.MOST));
 
         return result;

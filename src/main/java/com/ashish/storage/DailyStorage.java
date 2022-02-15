@@ -25,14 +25,14 @@ public class DailyStorage<Key> implements  Storage<Key> {
 
         List<Key> result = new ArrayList<>();
         // Find max frequency key for a day
-        int maxEntries = Integer.MIN_VALUE;
+        int maxEntriesCount = Integer.MIN_VALUE;
         for ( Map.Entry<Key, Integer> entry : dataMap.get(date).entrySet() ){
-            maxEntries = Math.max(maxEntries, entry.getValue() );
+            maxEntriesCount = Math.max(maxEntriesCount, entry.getValue() );
         }
 
         // collect all cookies which are of max frequency
         for ( Map.Entry<Key, Integer> entry : dataMap.get(date).entrySet() ){
-             if ( entry.getValue() == maxEntries ){
+             if ( entry.getValue() == maxEntriesCount ){
                  result.add(entry.getKey());
              }
         }

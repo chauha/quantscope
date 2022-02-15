@@ -1,56 +1,52 @@
 package com.ashish;
 
+import com.ashish.exceptions.NoEntryFoundException;
 import com.ashish.manager.LogManager;
 import com.ashish.models.Result;
 import org.apache.commons.cli.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 
 public class Main {
 
     public static void main(String [] args ){
-        Options options = new Options();
-        Option cookieFile   = Option.builder("f")
-                .argName("file")
-                .hasArg(true)
-                .desc("File to read cookies")
-                .build();
-
-        Option dateArg   = Option.builder("d")
-                .argName("date")
-                .hasArg(true)
-                .desc("Date to query for")
-                .build();
-
-        options.addOption(cookieFile);
-        options.addOption(dateArg);
+        final Options options = new Options();
+        options.addOption(new Option("f", "cookie_file", true, "Input file to read cookies"));
+        options.addOption(new Option("d", "date", true, "Date to query for"));
 
         CommandLineParser parser = new DefaultParser();
-
+        CommandLine cmd = null;
+        String filePath = "";
+        LocalDate dateTime = null;
         try {
-            CommandLine cmd = parser.parse(options, args);
-            String filePath = cmd.getOptionValue("f");
+             cmd = parser.parse(options, args);
+             filePath = cmd.getOptionValue("f");
 
             File file = new File(filePath);
-            LocalDate dateTime = LocalDate.parse(cmd.getOptionValue("d"));
+            dateTime = LocalDate.parse(cmd.getOptionValue("d"));
             Result result  = new LogManager().processRequest(file, dateTime.atStartOfDay());
             System.out.println(result.getData().toString());
-
-
             /*
-                TODO :
-                1. Formatter add for date
-                2. Exception handling
-                3. Cleanup Main method
-
+                Future
+                1. Make subsequent querying efficient by preprocessing data.
              */
 
-        } catch (Exception e){
-            //formatter.printHelp("", options);
+        } catch (ParseException e){
             e.printStackTrace();
-
-            System.out.println("Please enter a valid option");
+            System.out.println("Please enter valid args");
+        }
+        catch (FileNotFoundException e){
+            e.printStackTrace();
+            System.out.println("File doesn't exist" + filePath);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            System.out.println("Couldn't read file" + filePath);
+        } catch (NoEntryFoundException e){
+            System.out.println("No entries exist for " + dateTime );
         }
     }
 }

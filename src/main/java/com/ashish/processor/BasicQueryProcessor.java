@@ -1,5 +1,6 @@
 package com.ashish.processor;
 
+import com.ashish.exceptions.NoEntryFoundException;
 import com.ashish.models.QueryParams;
 import com.ashish.models.Result;
 import com.ashish.storage.Storage;
@@ -15,8 +16,11 @@ public class BasicQueryProcessor implements QueryProcessor {
     }
 
     @Override
-    public Result query(QueryParams params) {
+    public Result query(QueryParams params) throws NoEntryFoundException {
         List<String> res =  storage.getMostFrequent(params.getDate());
+        if ( res.size() == 0 ){
+            throw new NoEntryFoundException("No entries exist for "+ params.getDate());
+        }
         Result result = new Result(res);
         return result;
     }
